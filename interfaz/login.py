@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import *
+import sqlite3
+import registrar
 
 def login():
     raiz = tk.Tk()
@@ -15,7 +17,21 @@ def login():
     password = tk.Label(raiz, text="Contraseña:")
     textPassword=tk.Entry(raiz,border=4)
 
-    login=tk.Button(raiz, text="Login")
+    def validarUsuario():
+        DB_NAME='Garage.db'
+        conn=sqlite3.connect(DB_NAME)
+        cursorValidar=conn.cursor()
+
+        cursorValidar.execute("SELECT * FROM usuarios WHERE user=? AND password=?",(textUser.get(),textPassword.get()))
+        if cursorValidar.fetchone():
+            print("Logueado correctamente")
+            print(textUser.get(),textPassword.get())
+        else:
+            print("Usuario/contraseña incorrectos")
+            print(textUser.get(),textPassword.get())
+        cursorValidar.close()
+
+    login=tk.Button(raiz, text="Login",command=validarUsuario)
 
     user.place(x=30, y=40)
     textUser.place(x=120,y=40)
@@ -23,35 +39,9 @@ def login():
     textPassword.place(x=120,y=80)
     login.place(x=125,y=150)
 
-    create_user=tk.Button(raiz, text="No tenes cuenta? Registrate",command=register)
+    create_user=tk.Button(raiz, text="No tenes cuenta? Registrate",command=registrar.register)
     create_user.place(x=75,y=120)
 
     raiz.mainloop()
-
-def register():
-    registerWindow=Toplevel()
-    registerWindow.geometry('300x200')
-    registerWindow.resizable(0,0)
-    registerWindow.title('Nuevo Usuario')
-    registerWindow.configure(bg='grey')
-
-    nameRegister = tk.Label(registerWindow, text="Nombre:")
-    textName=tk.Entry(registerWindow,border=4)
-
-    userRegister = tk.Label(registerWindow, text="Usuario:")
-    textUserRegister=tk.Entry(registerWindow,border=4)
-
-    passwordRegister = tk.Label(registerWindow, text="Contraseña:")
-    textPasswordRegister=tk.Entry(registerWindow,border=4)
-
-    loginRegister=tk.Button(registerWindow, text="Crear usuario")
-
-    nameRegister.place(x=30, y=40)
-    textName.place(x=120,y=40)
-    userRegister.place(x=30, y=70)
-    textUserRegister.place(x=120,y=70)
-    passwordRegister.place(x=30, y=100)
-    textPasswordRegister.place(x=120,y=100)
-    loginRegister.place(x=115,y=150)
 
 login()
