@@ -6,7 +6,7 @@ def init_db():
     conn=sqlite3.connect(DB_NAME)
     conn.execute('''CREATE TABLE IF NOT EXISTS movil
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        patente TEXT,
+                        patente TEXT NOT NULL,
                         marca TEXT,
                         modelo TEXT,
                         color TEXT,

@@ -23,9 +23,8 @@ def register():
         Cursor=conn.cursor()
         print((textName.get(),textUserRegister.get(),textPasswordRegister.get(),"user"))
 
-        #TODO Siguientes 2 lineas generan error
         Cursor.execute("INSERT INTO usuarios (nombre,user,password,tipo_usuario) VALUES (?,?,?,?)",(textName.get(),textUserRegister.get(),textPasswordRegister.get(),"user"))
-        # conn.commit()
+        conn.commit()
         print("Usuario creado correctamente")
     
     loginRegister=tk.Button(registerWindow, text="Crear usuario",command=crearUsuario)
