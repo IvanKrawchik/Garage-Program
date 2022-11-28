@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import messagebox
 import sqlite3
 from registrar import register
 
@@ -15,7 +16,7 @@ def login():
     textUser=tk.Entry(raiz,border=4)
 
     password = tk.Label(raiz, text="Contraseña:")
-    textPassword=tk.Entry(raiz,border=4)
+    textPassword=tk.Entry(raiz,border=4,show="*")
 
     create_user=tk.Button(raiz, text="No tenes cuenta? Registrate",command=register)
 
@@ -25,20 +26,24 @@ def login():
     textPassword.place(x=120,y=80)
     create_user.place(x=75,y=120)
 
+    #Limpia campos al loguearse correctamente
+    def limpiarCamposLogin():
+        textUser.delete(0,"end")
+        textPassword.delete(0,"end")
+
     def validarUsuario():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         cursorValidar=conn.cursor()
-        cursorValidar.execute("SELECT * FROM usuarios WHERE user=? AND password=?",(textUser.get(),textPassword.get()))
-
-        if cursorValidar.fetchone():
-            print("Logueado correctamente")
-            print(textUser.get(),textPassword.get())
-            #TODO Validar cuando el usuario se logueo para darle acceso al sistema
-            # return True
+        #TODO Validar cuando el usuario se logueo para darle acceso al sistema
+        cursorValidar.execute("SELECT tipo_usuario FROM usuarios WHERE user=? AND password=?",(textUser.get(),textPassword.get()))
+        resultado=(cursorValidar.fetchone())
+        if resultado:
+            tk.messagebox.showinfo(title='Login', message="Logueado correctamente")
+            limpiarCamposLogin()
         else:
-            print("Usuario/contraseña incorrectos")
-            print(textUser.get(),textPassword.get())
+            tk.messagebox.showerror(title='Login', message="Usuario/contraseña incorrectos")
+            limpiarCamposLogin()
 
     login=tk.Button(raiz, text="Login",command=validarUsuario)
     login.place(x=125,y=150)

@@ -22,6 +22,7 @@ def init_db():
                         fecha_entrada DATETIME,
                         fecha_salida DATETIME
                         lugar TEXT,
+                        pago INTEGER,
                         patente_id TEXT,
                         FOREIGN KEY(patente_id) REFERENCES movil(patente))''')
 
