@@ -3,8 +3,10 @@ from tkinter import *
 from tkinter import messagebox
 import sqlite3
 import datetime
+from funciones.exportarCsv import exportarCsv
+from funciones.importarCsv import importarCsv
 
-def mainPage():
+def mainPageUser():
     raiz = Tk()
     raiz.geometry('350x450')
     raiz.resizable(0,0)
@@ -74,11 +76,11 @@ def mainPage():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         buscarID=conn.cursor()
-        buscarID.execute("SELECT id FROM movil WHERE patente = ?",(textPatente.get(),))
+        buscarID.execute("SELECT id FROM vehiculos WHERE patente = ?",(textPatente.get(),))
         respuesta=buscarID.fetchone()
         currentDateTime = datetime.datetime.now().replace(second=0, microsecond=0)
-        textPago.insert(0,currentDateTime)
-        textPago.config(state=DISABLED)
+        textSalida.insert(0,currentDateTime)
+        textSalida.config(state=DISABLED)
         insertFecha=conn.cursor()
         insertFecha.execute("UPDATE movimientos SET fecha_salida=? WHERE patente_id=?;",(currentDateTime,respuesta[0]))
         conn.commit()
@@ -88,7 +90,7 @@ def mainPage():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         buscarID=conn.cursor()
-        buscarID.execute("SELECT id FROM movil WHERE patente = ?",(textPatente.get(),))
+        buscarID.execute("SELECT id FROM vehiculos WHERE patente = ?",(textPatente.get(),))
         respuesta=buscarID.fetchone()
         textPago.insert(0, "Pagado")
         textPago.config(state=DISABLED)
@@ -96,18 +98,18 @@ def mainPage():
         insertPago.execute("UPDATE movimientos SET pago=? WHERE patente_id=?;",("Pagado",respuesta[0]))
         conn.commit()
 
-    def buscarPatente():
+    def buscarPatenteUser():
         #Busco patente en BDD
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         cursorBuscar=conn.cursor()
-        cursorBuscar.execute("SELECT * FROM movil WHERE patente = ?",(textPatente.get(),))
+        cursorBuscar.execute("SELECT * FROM vehiculos WHERE patente = ?",(textPatente.get(),))
         resultado = (cursorBuscar.fetchone())
 
         #Resultado de la busqueda y muestra
         if (resultado):
             buscarID=conn.cursor()
-            buscarID.execute("SELECT id FROM movil WHERE patente = ?",(textPatente.get(),))
+            buscarID.execute("SELECT id FROM vehiculos WHERE patente = ?",(textPatente.get(),))
             resultado1 = (buscarID.fetchone())
 
             buscarFecha=conn.cursor()
@@ -121,17 +123,19 @@ def mainPage():
             textColor.insert(0, resultado[4])
             textObservacion.insert(0, resultado[5])
             textEntrada.insert(0, resultado2[0])
-            textSalida.insert(0, resultado2[1])
-            textPago.insert(0, resultado2[2])
-            textSalida.config(state=DISABLED)
-            textPago.config(state=DISABLED)
             textMarca.config(state=DISABLED)
             textModelo.config(state=DISABLED)
             textColor.config(state=DISABLED)
             textObservacion.config(state=DISABLED)
             textEntrada.config(state=DISABLED)
+            
+            #TODO (error) se deberia validar si existe una fecha de salida y un estado de pago (no afecta)
+            textSalida.insert(0, resultado2[1])
+            textPago.insert(0, resultado2[2])
+            textSalida.config(state=DISABLED)
+            textPago.config(state=DISABLED)
         else:
-            tk.messagebox.showerror(title='Login', message="Auto no encontrado")
+            tk.messagebox.showerror(title='Error', message="Auto no encontrado")
             limpiarCampos()
 
     def agregarMovil():
@@ -144,9 +148,9 @@ def mainPage():
 
         #Agregar movil y movimiento de entrada
         if(textPatente.get()!="" and textMarca.get()!="" and textModelo.get()!="" and textColor.get()!=""):
-            Cursor.execute("INSERT INTO movil (patente,marca,modelo,color,observaciones) VALUES (?,?,?,?,?);",(textPatente.get(),textMarca.get(),textModelo.get(),textColor.get(),textObservacion.get()))
+            Cursor.execute("INSERT INTO vehiculos (patente,marca,modelo,color,observaciones) VALUES (?,?,?,?,?);",(textPatente.get(),textMarca.get(),textModelo.get(),textColor.get(),textObservacion.get()))
             conn.commit()
-            Cursor.execute("SELECT id FROM movil WHERE patente = ?",(textPatente.get(),))
+            Cursor.execute("SELECT id FROM vehiculos WHERE patente = ?",(textPatente.get(),))
             resultado=(Cursor.fetchone())
             Cursor.execute("INSERT INTO movimientos (fecha_entrada,patente_id) VALUES (?,?);",(currentDateTime,resultado[0]))
             conn.commit()
@@ -155,12 +159,12 @@ def mainPage():
         else:
             tk.messagebox.showerror(title='Login', message="Auto no registrado")
 
-    buttonPatente=tk.Button(raiz, text="Buscar", width=10,command=buscarPatente)
+    buttonPatente=tk.Button(raiz, text="Buscar", width=10,command=buscarPatenteUser)
     buttonSalida=tk.Button(raiz, text="Salida", width=10, command=fechaSalida)
     buttonPagar=tk.Button(raiz, text="Pagar", width=10, command=pagarServicio)
     ingresar=tk.Button(raiz, text="Ingresar vehiculo", width=15,command=agregarMovil)
-    importar=tk.Button(raiz, text="Importar datos", width=15)
-    exportar=tk.Button(raiz, text="Exportar datos", width=15)
+    importar=tk.Button(raiz, text="Importar CSV", width=15,command=importarCsv)
+    exportar=tk.Button(raiz, text="Exportar en CSV", width=15, command=exportarCsv)
     limpiar=tk.Button(raiz, text="Limpiar campos", width=15, command=limpiarCampos)
     buttonPatente.place(x=270, y=40)
     buttonSalida.place(x=270,y=230)

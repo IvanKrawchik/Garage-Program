@@ -3,6 +3,8 @@ from tkinter import *
 from tkinter import messagebox
 import sqlite3
 from registrar import register
+from mainPageAdmin import mainPageAdmin
+from mainPageUser import mainPageUser
 
 
 def login():
@@ -35,12 +37,19 @@ def login():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         cursorValidar=conn.cursor()
-        #TODO Validar cuando el usuario se logueo para darle acceso al sistema
         cursorValidar.execute("SELECT tipo_usuario FROM usuarios WHERE user=? AND password=?",(textUser.get(),textPassword.get()))
         resultado=(cursorValidar.fetchone())
         if resultado:
-            tk.messagebox.showinfo(title='Login', message="Logueado correctamente")
-            limpiarCamposLogin()
+            # Al loguearse corectamente se corre mainPage y se cierra el login
+            tipoDeUsuario=resultado[0].upper()
+            if (tipoDeUsuario=='ADMIN'):
+                tk.messagebox.showinfo(title='Login', message="Logueado correctamente como Admin")
+                raiz.destroy()
+                mainPageAdmin()
+            else:
+                tk.messagebox.showinfo(title='Login', message="Logueado correctamente como User")
+                raiz.destroy()
+                mainPageUser()
         else:
             tk.messagebox.showerror(title='Login', message="Usuario/contraseña incorrectos")
             limpiarCamposLogin()

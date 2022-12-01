@@ -4,7 +4,7 @@ DB_NAME='Garage.db'
 
 def init_db():
     conn=sqlite3.connect(DB_NAME)
-    conn.execute('''CREATE TABLE IF NOT EXISTS movil
+    conn.execute('''CREATE TABLE IF NOT EXISTS vehiculos
                         (id INTEGER PRIMARY KEY AUTOINCREMENT,
                         patente TEXT NOT NULL,
                         marca TEXT,

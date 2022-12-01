@@ -39,6 +39,8 @@ def register():
             conn.commit()
             limpiarCamposRegister()
             tk.messagebox.showinfo(title='Login', message="Usuario creado correctamente")
+            # Al registrarse corectamente se cierra la ventana para que el se loguee
+            registerWindow.destroy()
     
     loginRegister=tk.Button(registerWindow, text="Crear usuario",command=crearUsuario)
 
