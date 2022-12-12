@@ -29,7 +29,7 @@ def init_db():
     conn=sqlite3.connect(DB_NAME)
     usuario_admin="Admin"
     qry_admin=f"""
-                INSERT INTO usuarios
+                INSERT OR IGNORE INTO usuarios
                     (id,
                     nombre,
                     user,

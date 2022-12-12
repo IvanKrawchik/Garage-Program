@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
-from registrar import register
-from mainPageAdmin import mainPageAdmin
-from mainPageUser import mainPageUser
+from interfaz.registrar import register
+from interfaz.mainPageAdmin import mainPageAdmin
+from interfaz.mainPageUser import mainPageUser
 
 
 def login():

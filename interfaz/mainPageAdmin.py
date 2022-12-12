@@ -3,8 +3,8 @@ from tkinter import *
 from tkinter import messagebox
 import sqlite3
 import datetime
-from funciones.exportarCsv import exportarCsv
-from funciones.importarCsv import importarCsv
+from interfaz.funciones.exportarCsv import exportarCsv
+from interfaz.funciones.importarCsv import importarCsv
 
 def mainPageAdmin():
     raiz = Tk()
@@ -127,16 +127,15 @@ def mainPageAdmin():
             textModelo.config(state=DISABLED)
             textColor.config(state=DISABLED)
             textObservacion.config(state=DISABLED)
-            
-            #TODO (error) se deberia validar si existe una fecha de salida y un estado de pago (no afecta)
-            textSalida.insert(0, resultado2[1])
-            textPago.insert(0, resultado2[2])
+            if resultado2[1] != None:
+                textSalida.insert(0, resultado2[1])
+            if resultado2[2] != None:
+                textPago.insert(0, resultado2[2])
             textPago.config(state=DISABLED)
         else:
             tk.messagebox.showerror(title='Error', message="Auto no encontrado")
             limpiarCampos()
 
-    #TODO (Todavia no funciona)
     def actualizarMovil():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
@@ -152,6 +151,7 @@ def mainPageAdmin():
             if (textEntrada.get()!=resultado2[0]) or (textSalida.get()!=resultado2[1]):
                 actualizarMovil=conn.cursor()
                 actualizarMovil.execute("UPDATE movimientos SET fecha_entrada=?, fecha_salida=? WHERE patente_id =?",(textEntrada.get(),textSalida.get(),resultado[0]))
+                conn.commit()
                 tk.messagebox.showinfo(title='Movil Actualizado', message="Auto actualizado")
                 limpiarCampos()
             else:
@@ -162,12 +162,15 @@ def mainPageAdmin():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         Cursor=conn.cursor()
+        cursorPatente=conn.cursor()
+        cursorPatente.execute("SELECT patente FROM vehiculos WHERE patente=?",(textPatente.get(),))
+        resultadoPatente = (cursorPatente.fetchone())
 
         #Obtener fecha actual del sistema
         currentDateTime = datetime.datetime.now().replace(second=0, microsecond=0)
 
         #Agregar movil y movimiento de entrada
-        if(textPatente.get()!="" and textMarca.get()!="" and textModelo.get()!="" and textColor.get()!=""):
+        if((textPatente.get()!="" and textMarca.get()!="" and textModelo.get()!="" and textColor.get()!="") and (resultadoPatente==False or resultadoPatente==None)):
             Cursor.execute("INSERT INTO vehiculos (patente,marca,modelo,color,observaciones) VALUES (?,?,?,?,?);",(textPatente.get(),textMarca.get(),textModelo.get(),textColor.get(),textObservacion.get()))
             conn.commit()
             Cursor.execute("SELECT id FROM vehiculos WHERE patente = ?",(textPatente.get(),))

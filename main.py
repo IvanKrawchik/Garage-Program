@@ -1,9 +1,9 @@
 import base_datos
-# from interfaz import login
+from interfaz.login import login
 
 def main():
     base_datos.init_db()
-    # login.login()
+    login()
 
 if __name__ == '__main__':
     main()

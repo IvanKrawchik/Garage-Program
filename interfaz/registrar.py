@@ -26,9 +26,8 @@ def register():
         DB_NAME='Garage.db'
         conn=sqlite3.connect(DB_NAME)
         Cursor=conn.cursor()
-        print((textName.get(),textUserRegister.get(),textPasswordRegister.get(),"user"))
-
         Cursor.execute("SELECT * FROM usuarios WHERE user=?",(textUserRegister.get(),))
+        
         if(textName.get()=="" or textUserRegister.get()=="" or textPasswordRegister.get()==""):
             tk.messagebox.showerror(title='Login', message="Campos invalidos")
         elif (Cursor.fetchone()):
